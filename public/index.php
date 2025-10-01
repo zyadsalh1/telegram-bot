@@ -23,6 +23,7 @@ $router->post('/cart/remove', 'CartController@remove');
 $router->get('/cart', 'CartController@view');
 $router->post('/checkout', 'CheckoutController@checkout');
 $router->post('/payment/webhook/(paymob|fawry|kashier|paypal)', 'PaymentWebhookController@handle');
+$router->get('/page/(.+)', 'PageController@show');
 
 // Admin routes (basic, to be improved later)
 $router->get('/admin', 'AdminController@dashboard');
@@ -33,6 +34,10 @@ $router->post('/admin/devices/toggle', 'AdminController@toggleDeviceDeposit');
 $router->get('/admin/zones', 'AdminController@zones');
 $router->post('/admin/zones/save', 'AdminController@zoneSave');
 $router->post('/admin/zones/delete', 'AdminController@zoneDelete');
+$router->get('/admin/pages', 'AdminController@pages');
+$router->get('/admin/page/edit', 'AdminController@pageEdit');
+$router->post('/admin/page/save', 'AdminController@pageSave');
+$router->post('/admin/page/delete', 'AdminController@pageDelete');
 
 // Dispatch
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

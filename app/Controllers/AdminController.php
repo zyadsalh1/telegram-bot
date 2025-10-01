@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Models\ShippingZone;
+use App\Models\ContactSettings;
+use App\Models\Page;
 
 final class AdminController
 {
@@ -20,7 +22,8 @@ final class AdminController
             'value' => \App\Config\Config::DEPOSIT_VALUE_DEFAULT,
             'scope' => \App\Config\Config::DEPOSIT_SCOPE_DEFAULT,
         ]);
-        \view('admin/settings', ['deposit' => $deposit]);
+        $contact = (new ContactSettings())->get();
+        \view('admin/settings', ['deposit' => $deposit, 'contact' => $contact]);
     }
 
     public function saveSettings(): void
@@ -34,6 +37,15 @@ final class AdminController
         $pdo = \db();
         $stmt = $pdo->prepare('INSERT INTO settings (`key`,`value`) VALUES (?,?) ON DUPLICATE KEY UPDATE `value`=VALUES(`value`)');
         $stmt->execute(['deposit', json_encode($payload)]);
+        // Save contact settings
+        (new ContactSettings())->save([
+            'phone' => $_POST['phone'] ?? null,
+            'email' => $_POST['email'] ?? null,
+            'facebook' => $_POST['facebook'] ?? null,
+            'instagram' => $_POST['instagram'] ?? null,
+            'tiktok' => $_POST['tiktok'] ?? null,
+            'whatsapp' => $_POST['whatsapp'] ?? null,
+        ]);
         \redirect('/admin/settings');
     }
 
@@ -82,6 +94,52 @@ final class AdminController
             (new ShippingZone())->delete((int)$_POST['id']);
         }
         \redirect('/admin/zones');
+    }
+
+    public function pages(): void
+    {
+        $pages = (new Page())->all();
+        \view('admin/pages', ['pages' => $pages]);
+    }
+
+    public function pageEdit(): void
+    {
+        $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
+        $page = $id ? (new Page())->find($id) : null;
+        $translations = $page ? (new Page())->translations((int)$page['id']) : [];
+        $byLocale = [];
+        foreach ($translations as $tr) { $byLocale[$tr['locale']] = $tr; }
+        \view('admin/page_edit', ['page' => $page, 'tr' => $byLocale]);
+    }
+
+    public function pageSave(): void
+    {
+        $page = new Page();
+        $data = [ 'id' => $_POST['id'] ?? null, 'slug' => trim($_POST['slug'] ?? '') ];
+        $translations = [
+            'ar' => [
+                'title' => $_POST['title_ar'] ?? '',
+                'content' => $_POST['content_ar'] ?? '',
+                'meta_title' => $_POST['meta_title_ar'] ?? null,
+                'meta_description' => $_POST['meta_description_ar'] ?? null,
+                'meta_keywords' => $_POST['meta_keywords_ar'] ?? null,
+            ],
+            'en' => [
+                'title' => $_POST['title_en'] ?? '',
+                'content' => $_POST['content_en'] ?? '',
+                'meta_title' => $_POST['meta_title_en'] ?? null,
+                'meta_description' => $_POST['meta_description_en'] ?? null,
+                'meta_keywords' => $_POST['meta_keywords_en'] ?? null,
+            ],
+        ];
+        $id = $page->upsert($data, $translations);
+        \redirect('/admin/pages');
+    }
+
+    public function pageDelete(): void
+    {
+        if (!empty($_POST['id'])) { (new Page())->delete((int)$_POST['id']); }
+        \redirect('/admin/pages');
     }
 }
 ?>

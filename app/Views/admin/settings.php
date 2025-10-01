@@ -35,6 +35,18 @@
         </label>
         <button type="submit"><?= t('save') ?></button>
     </form>
+
+    <h3><?= t('settings') ?> - Contact</h3>
+    <form method="post" action="/admin/settings">
+        <input type="hidden" name="_section" value="contact">
+        <label>Phone<input name="phone" value="<?= htmlspecialchars((string)($contact['phone'] ?? '')) ?>"></label>
+        <label>Email<input name="email" value="<?= htmlspecialchars((string)($contact['email'] ?? '')) ?>"></label>
+        <label>Facebook<input name="facebook" value="<?= htmlspecialchars((string)($contact['facebook'] ?? '')) ?>"></label>
+        <label>Instagram<input name="instagram" value="<?= htmlspecialchars((string)($contact['instagram'] ?? '')) ?>"></label>
+        <label>TikTok<input name="tiktok" value="<?= htmlspecialchars((string)($contact['tiktok'] ?? '')) ?>"></label>
+        <label>WhatsApp<input name="whatsapp" value="<?= htmlspecialchars((string)($contact['whatsapp'] ?? '')) ?>"></label>
+        <button type="submit"><?= t('save') ?></button>
+    </form>
     <p><a href="/admin">← <?= t('dashboard') ?></a></p>
 </main>
 </body>
