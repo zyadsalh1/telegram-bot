@@ -47,6 +47,29 @@
         <label>WhatsApp<input name="whatsapp" value="<?= htmlspecialchars((string)($contact['whatsapp'] ?? '')) ?>"></label>
         <button type="submit"><?= t('save') ?></button>
     </form>
+
+    <h3>SMTP</h3>
+    <?php $smtp = db()->query('SELECT * FROM smtp_settings WHERE id=1')->fetch() ?: []; ?>
+    <form method="post" action="/admin/settings">
+        <label>Host<input name="smtp_host" value="<?= htmlspecialchars((string)($smtp['host'] ?? '')) ?>" required></label>
+        <label>Port<input type="number" name="smtp_port" value="<?= htmlspecialchars((string)($smtp['port'] ?? '587')) ?>"></label>
+        <label>Username<input name="smtp_username" value="<?= htmlspecialchars((string)($smtp['username'] ?? '')) ?>"></label>
+        <label>Password<input type="password" name="smtp_password" value="<?= htmlspecialchars((string)($smtp['password'] ?? '')) ?>"></label>
+        <label>Encryption
+            <select name="smtp_encryption">
+                <option value="none" <?= (($smtp['encryption'] ?? '')==='none')?'selected':'' ?>>none</option>
+                <option value="ssl" <?= (($smtp['encryption'] ?? '')==='ssl')?'selected':'' ?>>ssl</option>
+                <option value="tls" <?= (($smtp['encryption'] ?? 'tls')==='tls')?'selected':'' ?>>tls</option>
+            </select>
+        </label>
+        <label>From Email<input name="smtp_from_email" value="<?= htmlspecialchars((string)($smtp['from_email'] ?? '')) ?>"></label>
+        <label>From Name<input name="smtp_from_name" value="<?= htmlspecialchars((string)($smtp['from_name'] ?? '')) ?>"></label>
+        <button><?= t('save') ?></button>
+    </form>
+    <form method="post" action="/admin/mail/test" style="margin-top:10px">
+        <label>Test To<input name="to" placeholder="you@example.com"></label>
+        <button>Send Test</button>
+    </form>
     <p><a href="/admin">← <?= t('dashboard') ?></a></p>
 </main>
 </body>

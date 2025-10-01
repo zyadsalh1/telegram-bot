@@ -38,6 +38,9 @@ $router->get('/admin/pages', 'AdminController@pages');
 $router->get('/admin/page/edit', 'AdminController@pageEdit');
 $router->post('/admin/page/save', 'AdminController@pageSave');
 $router->post('/admin/page/delete', 'AdminController@pageDelete');
+$router->get('/admin/mail/templates', 'AdminController@mailTemplates');
+$router->post('/admin/mail/template/save', 'AdminController@mailTemplateSave');
+$router->post('/admin/mail/test', 'AdminController@mailTest');
 
 // Dispatch
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

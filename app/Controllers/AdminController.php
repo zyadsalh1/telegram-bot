@@ -6,6 +6,8 @@ namespace App\Controllers;
 use App\Models\ShippingZone;
 use App\Models\ContactSettings;
 use App\Models\Page;
+use App\Models\EmailTemplate;
+use App\Services\Mailer;
 
 final class AdminController
 {
@@ -46,6 +48,20 @@ final class AdminController
             'tiktok' => $_POST['tiktok'] ?? null,
             'whatsapp' => $_POST['whatsapp'] ?? null,
         ]);
+        // Save SMTP if present
+        if (isset($_POST['smtp_host'])) {
+            $pdo->exec('INSERT IGNORE INTO smtp_settings (id, updated_at) VALUES (1, NOW())');
+            $stmtS = $pdo->prepare('UPDATE smtp_settings SET host=?, port=?, username=?, password=?, encryption=?, from_email=?, from_name=?, updated_at=NOW() WHERE id=1');
+            $stmtS->execute([
+                $_POST['smtp_host'] ?? '',
+                (int)($_POST['smtp_port'] ?? 587),
+                $_POST['smtp_username'] ?? null,
+                $_POST['smtp_password'] ?? null,
+                $_POST['smtp_encryption'] ?? 'tls',
+                $_POST['smtp_from_email'] ?? null,
+                $_POST['smtp_from_name'] ?? null,
+            ]);
+        }
         \redirect('/admin/settings');
     }
 
@@ -53,6 +69,25 @@ final class AdminController
     {
         $devices = \db()->query('SELECT * FROM devices ORDER BY created_at DESC')->fetchAll();
         \view('admin/devices', ['devices' => $devices]);
+    }
+
+    public function mailTemplates(): void
+    {
+        $templates = (new EmailTemplate())->all();
+        \view('admin/mail_templates', ['templates' => $templates]);
+    }
+
+    public function mailTemplateSave(): void
+    {
+        (new EmailTemplate())->save($_POST['key'], $_POST['locale'], $_POST['subject'], $_POST['body']);
+        \redirect('/admin/mail/templates');
+    }
+
+    public function mailTest(): void
+    {
+        $to = $_POST['to'] ?? '';
+        $ok = (new Mailer())->send($to, $to, 'Test', '<p>Test email</p>');
+        echo $ok ? 'OK' : 'Failed';
     }
 
     public function toggleDeviceDeposit(): void

@@ -53,3 +53,26 @@ CREATE TABLE IF NOT EXISTS page_translations (
   UNIQUE KEY uniq_page_locale (page_id, locale),
   CONSTRAINT fk_pt_page FOREIGN KEY (page_id) REFERENCES pages(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- SMTP settings
+CREATE TABLE IF NOT EXISTS smtp_settings (
+  id tinyint unsigned NOT NULL PRIMARY KEY DEFAULT 1,
+  host varchar(150) NOT NULL,
+  port smallint unsigned NOT NULL DEFAULT 587,
+  username varchar(150) NULL,
+  password varchar(200) NULL,
+  encryption enum('none','ssl','tls') NOT NULL DEFAULT 'tls',
+  from_email varchar(150) NULL,
+  from_name varchar(150) NULL,
+  updated_at datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Email templates per locale
+CREATE TABLE IF NOT EXISTS email_templates (
+  id int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `key` varchar(100) NOT NULL,
+  locale varchar(2) NOT NULL,
+  subject varchar(255) NOT NULL,
+  body mediumtext NOT NULL,
+  UNIQUE KEY uniq_key_locale (`key`, locale)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
