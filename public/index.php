@@ -41,6 +41,9 @@ $router->post('/admin/page/delete', 'AdminController@pageDelete');
 $router->get('/admin/mail/templates', 'AdminController@mailTemplates');
 $router->post('/admin/mail/template/save', 'AdminController@mailTemplateSave');
 $router->post('/admin/mail/test', 'AdminController@mailTest');
+$router->get('/admin/orders', 'AdminOrdersController@list');
+$router->get('/admin/order/(\\d+)', 'AdminOrdersController@view');
+$router->post('/admin/order/status', 'AdminOrdersController@status');
 
 // Dispatch
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

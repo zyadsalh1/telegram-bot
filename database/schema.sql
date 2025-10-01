@@ -76,3 +76,45 @@ CREATE TABLE IF NOT EXISTS email_templates (
   body mediumtext NOT NULL,
   UNIQUE KEY uniq_key_locale (`key`, locale)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Products and Orders
+CREATE TABLE IF NOT EXISTS products (
+  id int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name_ar varchar(255) NOT NULL,
+  name_en varchar(255) NOT NULL,
+  price decimal(10,2) NOT NULL,
+  stock int NOT NULL DEFAULT 0,
+  image varchar(255) NULL,
+  active tinyint(1) NOT NULL DEFAULT 1,
+  created_at datetime NOT NULL,
+  updated_at datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS orders (
+  id int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  order_code varchar(20) NOT NULL UNIQUE,
+  customer_name varchar(150) NOT NULL,
+  customer_email varchar(150) NULL,
+  customer_phone varchar(50) NULL,
+  address text NULL,
+  zone_id int unsigned NULL,
+  subtotal decimal(10,2) NOT NULL DEFAULT 0,
+  shipping decimal(10,2) NOT NULL DEFAULT 0,
+  discount decimal(10,2) NOT NULL DEFAULT 0,
+  deposit decimal(10,2) NOT NULL DEFAULT 0,
+  total decimal(10,2) NOT NULL DEFAULT 0,
+  status enum('pending','confirmed','processing','shipped','delivered','cancelled') NOT NULL DEFAULT 'pending',
+  created_at datetime NOT NULL,
+  updated_at datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS order_items (
+  id int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  order_id int unsigned NOT NULL,
+  product_id int unsigned NOT NULL,
+  name varchar(255) NOT NULL,
+  qty int NOT NULL,
+  price decimal(10,2) NOT NULL,
+  total decimal(10,2) NOT NULL,
+  CONSTRAINT fk_oi_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
