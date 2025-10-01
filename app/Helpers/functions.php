@@ -16,6 +16,30 @@ function db(): PDO
     return $pdo;
 }
 
+function locale(): string
+{
+    if (isset($_GET['lang']) && in_array($_GET['lang'], ['ar','en'], true)) {
+        $_SESSION['lang'] = $_GET['lang'];
+    }
+    $lang = $_SESSION['lang'] ?? 'ar';
+    return $lang;
+}
+
+function t(string $key, array $replacements = []): string
+{
+    static $dict = null;
+    $lang = locale();
+    if (!isset($dict[$lang])) {
+        $file = __DIR__ . '/../Lang/' . $lang . '.php';
+        $dict[$lang] = file_exists($file) ? require $file : [];
+    }
+    $text = $dict[$lang][$key] ?? $key;
+    foreach ($replacements as $k => $v) {
+        $text = str_replace(':' . $k, (string)$v, $text);
+    }
+    return $text;
+}
+
 function view(string $template, array $data = []): void
 {
     extract($data, EXTR_SKIP);

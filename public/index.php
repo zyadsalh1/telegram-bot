@@ -30,6 +30,9 @@ $router->get('/admin/settings', 'AdminController@settings');
 $router->post('/admin/settings', 'AdminController@saveSettings');
 $router->get('/admin/devices', 'AdminController@devices');
 $router->post('/admin/devices/toggle', 'AdminController@toggleDeviceDeposit');
+$router->get('/admin/zones', 'AdminController@zones');
+$router->post('/admin/zones/save', 'AdminController@zoneSave');
+$router->post('/admin/zones/delete', 'AdminController@zoneDelete');
 
 // Dispatch
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
